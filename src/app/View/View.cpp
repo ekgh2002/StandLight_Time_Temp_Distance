@@ -94,6 +94,8 @@ void View::lightOn_3()
     light3->On();
     light4->Off();
     light5->Off();
+
+
 }
 
 void View::lightOn_4()

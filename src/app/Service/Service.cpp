@@ -4,6 +4,7 @@ Service::Service(View *viewer)
 {
     view = viewer;
     lightState = LIGHT_OFF;
+    bDistanceLight = false;
 }
 
 Service::~Service()
@@ -29,7 +30,14 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
-            view->setState(lightState);
+            if (bDistanceLight)
+            {
+                view->setState(lightState);
+            }
+            else
+            {
+                view->setState(LIGHT_OFF);
+            }
         break;
 
         case LIGHT_2:
@@ -39,7 +47,14 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
-            view->setState(lightState);
+            if (bDistanceLight)
+            {
+                view->setState(lightState);
+            }
+            else
+            {
+                view->setState(LIGHT_OFF);
+            }
         break;
 
         case LIGHT_3:
@@ -49,7 +64,15 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
-            view->setState(lightState);
+            if (bDistanceLight)
+            {
+                view->setState(lightState);
+            }
+            else
+            {
+                view->setState(LIGHT_OFF);
+            }
+            
         break;
 
         case LIGHT_4:
@@ -59,7 +82,14 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
-            view->setState(lightState);
+            if (bDistanceLight)
+            {
+                view->setState(lightState);
+            }
+            else
+            {
+                view->setState(LIGHT_OFF);
+            }
         break;
 
         case LIGHT_5:
@@ -69,7 +99,14 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;              
             }
-            view->setState(lightState);
+            if (bDistanceLight)
+            {
+                view->setState(lightState);
+            }
+            else
+            {
+                view->setState(LIGHT_OFF);
+            }
         break;
 
 
@@ -90,4 +127,20 @@ void Service::updateEvent(DHT_Data dhtData)
 
     view->setState(lightState);
     // view->lightwarning(dhtData);
+}
+
+void Service::updateDistance(int distance)
+{
+    printf("distance : %d\n", distance);
+
+    if (distance < 0)
+    {
+        bDistanceLight = false;
+        view->setState(LIGHT_OFF);
+    }
+    else
+    {
+        bDistanceLight = true;
+        view->setState(lightState);
+    }
 }
