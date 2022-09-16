@@ -3,16 +3,18 @@
 
 #include "LCD.h"
 #include "Led.h"
+#include "PWM.h"
 
 
 class TempHumidView
 {
 private:
     LCD *lcd;
+    PWM *pwm;
 
 
 public:
-    TempHumidView(LCD *lcd);
+    TempHumidView(LCD *lcd, PWM *pwm);
     virtual ~TempHumidView();
     void setTempHumidData(float temp, float humid);
 };

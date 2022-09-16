@@ -15,29 +15,33 @@
 #include "TempHumidService.h"
 #include "TempHumidView.h"
 #include "UltraSonic.h"
+#include "PWM.h"
 
 int main()
 {
     std::cout << "Hello World!" << std::endl;
-    Button modeButton(27);
-    Button powerButton(28);
+    Button modeButton(2);
+    Button powerButton(3);
+    Button onoffbt(27);
+    Button panpowerbutton(28);
     ClockCheck clockCheck;
     Led led1(21);
     Led led2(22);
     Led led3(23);
     Led led4(24);
     Led led5(25);
+    PWM pwm(26);
     DHT11 dht(7);
     UltraSonic ultraSonic(5, 4);
     LCD lcd(new I2C("/dev/i2c-1", 0x27));
-    View view(&led1, &led2, &led3, &led4, &led5, &lcd);
-    TempHumidView tempHumidView(&lcd);
+    View view(&led1, &led2, &led3, &led4, &led5, &lcd, &pwm);
+    TempHumidView tempHumidView(&lcd, &pwm);
     ClockView clockView(&lcd);
     Service service(&view);
     ClockService clockService(&clockView);
     TempHumidService tempHumidService(&tempHumidView);
     Controller control(&service, &clockService, &tempHumidService);
-    Listener listener(&modeButton, &powerButton, &control, &clockCheck, &dht, &ultraSonic);
+    Listener listener(&modeButton, &powerButton, &panpowerbutton, &onoffbt, &control, &clockCheck, &dht, &ultraSonic);
     DHT_Data dhtData;
 
     while (1)
@@ -46,6 +50,12 @@ int main()
         view.lightView();
  
         delay(50);
+        // pwm.Write(40);
+        // delay(2000);
+        // pwm.Write(70);
+        // delay(2000);
+
+
     }
 
     return 0;

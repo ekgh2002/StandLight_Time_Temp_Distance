@@ -1,8 +1,9 @@
 #include "TempHumidView.h"
 
-TempHumidView::TempHumidView(LCD *lcd)
+TempHumidView::TempHumidView(LCD *lcd, PWM *pwm)
 {
     this->lcd = lcd;
+    this->pwm = pwm;
 }
 
 TempHumidView::~TempHumidView()
@@ -25,7 +26,7 @@ void TempHumidView::setTempHumidData(float temp, float humid)
     else if(temp >= 26)
     {
         lcd->WriteStringXY(1, 9, "warning");  
+        pwm->Write(40);
         printf("%s\n", buff1);  
     }
-    
 }

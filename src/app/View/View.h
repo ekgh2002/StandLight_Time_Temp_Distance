@@ -5,6 +5,7 @@
 #include "Led.h"
 #include "LightState.h"
 #include "LCD.h"
+#include "PWM.h"
 
 // enum {LIGHT_OFF, LIGHT_1, LIGHT_2, LIGHT_3, LIGHT_4, LIGHT_5};
 
@@ -18,9 +19,10 @@ private:
     Led *light4;
     Led *light5;
     LCD *lcd;
+    PWM *pwm;
 
 public:
-    View(Led *led1, Led *led2, Led *led3, Led *led4, Led *led5, LCD *Lcd);
+    View(Led *led1, Led *led2, Led *led3, Led *led4, Led *led5, LCD *Lcd, PWM *pwm);
     virtual ~View();
     void setState(int state);
     void lightView();
@@ -31,6 +33,14 @@ public:
     void lightOn_5();
     void lightwarning();
     void lightOff();
+    void pan1();
+    void pan2();
+    void pan3();
+    void panoff();
+    void motorview();
+    void panwarning();
+    
+
     // void LCDplay0();
     // void LCDplay1();
     // void LCDplay2();

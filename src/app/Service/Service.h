@@ -13,6 +13,7 @@ class Service
 {
 private:
     int lightState;
+    int panstate;
     View *view;
     bool bDistanceLight;
 

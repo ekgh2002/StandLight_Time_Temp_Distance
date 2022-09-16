@@ -1,9 +1,12 @@
 #include "Service.h"
+#include <iostream>
+#include <wiringPi.h>
 
 Service::Service(View *viewer)
 {
     view = viewer;
     lightState = LIGHT_OFF;
+    panstate = PAN_OFF;
     bDistanceLight = false;
 }
 
@@ -21,6 +24,11 @@ void Service::updateState(std::string strState)
                 lightState = LIGHT_1;
                 view->setState(lightState);
             }
+             if(strState == "onoffbt")
+             {
+                lightState = PAN_ON;
+                view->setState(lightState);
+             }
         break;
 
         case LIGHT_1:
@@ -29,6 +37,11 @@ void Service::updateState(std::string strState)
             }
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
+            }
+            if(strState == "onoffbt")
+            {
+            lightState = PAN_ON;
+            view->setState(lightState);
             }
             if (bDistanceLight)
             {
@@ -47,6 +60,11 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
+            if(strState == "onoffbt")
+            {
+            lightState = PAN_ON;
+            view->setState(lightState);
+            }
             if (bDistanceLight)
             {
                 view->setState(lightState);
@@ -63,6 +81,11 @@ void Service::updateState(std::string strState)
             }
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
+            }
+            if(strState == "onoffbt")
+            {
+            lightState = PAN_ON;
+            view->setState(lightState);
             }
             if (bDistanceLight)
             {
@@ -82,6 +105,11 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
+            if(strState == "onoffbt")
+            {
+            lightState = PAN_ON;
+            view->setState(lightState);
+            }
             if (bDistanceLight)
             {
                 view->setState(lightState);
@@ -99,6 +127,11 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;              
             }
+            if(strState == "onoffbt")
+            {
+            lightState = PAN_ON;
+            view->setState(lightState);
+            }
             if (bDistanceLight)
             {
                 view->setState(lightState);
@@ -109,10 +142,69 @@ void Service::updateState(std::string strState)
             }
         break;
 
+        case PAN_OFF:
+            if(strState == "onoffbt")
+            {
+                lightState = PAN_ON;
+                view->setState(lightState);
+            }     
+        break;
 
+        case PAN_ON:
+            if(strState == "onoffbt")
+            {
+                lightState = PAN_OFF;
+                view->setState(lightState);
+            }
+            if(strState == "panpowerbutton")
+            {
+                lightState = PAN2;
+                view->setState(lightState);
+            }  
+        break;
+
+        case PAN1:
+            if(strState == "onoffbt")
+            {
+                lightState = PAN_OFF;
+                view->setState(lightState);
+            }
+            if(strState == "panpowerbutton")
+            {
+                lightState = PAN2;
+                view->setState(lightState);
+            }    
+        break;
+
+        case PAN2:
+            if(strState == "onoffbt")
+            {
+                lightState = PAN_OFF;
+                view->setState(lightState);
+            }
+            if(strState == "panpowerbutton")
+            {
+                lightState = PAN3;
+                view->setState(lightState);
+            }    
+        break;
+
+        case PAN3:
+            if(strState == "onoffbt")
+            {
+                lightState = PAN_OFF;
+                view->setState(lightState);
+            }
+            if(strState == "panpowerbutton")
+            {
+                lightState = PAN1;
+                view->setState(lightState);
+            }
+        break;
 
     }
 }
+
 
 void Service::updateEvent(DHT_Data dhtData)
 {
@@ -131,12 +223,23 @@ void Service::updateEvent(DHT_Data dhtData)
 
 void Service::updateDistance(int distance)
 {
-    printf("distance : %d\n", distance);
 
+    static int distance_count = 0;
+    printf("distance : %d\n", distance);
     if (distance < 0)
+    {
+        distance_count = distance_count+1;
+    }
+    else if(distance > 0)
+    {
+        distance_count = 0;
+    }
+    
+    if (distance_count > 4)
     {
         bDistanceLight = false;
         view->setState(LIGHT_OFF);
+        distance_count = 0;
     }
     else
     {
