@@ -2,11 +2,12 @@
 #include <wiringPi.h>
 #include <iostream>
 
-Listener::Listener(Button *modeButton, Button *powerButton, Button *panpowerbutton, Button *onoffbt, Controller *control, ClockCheck *clock, DHT11 *dht11, UltraSonic *ultraSonic)
+Listener::Listener(Button *modeButton, Button *powerButton, Button *panpowerbutton, Button *onoffbt, Button *clockbutton, Controller *control, ClockCheck *clock, DHT11 *dht11, UltraSonic *ultraSonic)
 {
     this->modeButton = modeButton;
     this->powerButton = powerButton;
     this->panpowerbutton = panpowerbutton;
+    this->clockbutton = clockbutton;
     this->onoffbt = onoffbt;
     this->controller = control;
     this->clockCheck = clock;
@@ -41,7 +42,10 @@ void Listener::checkEvent()
         controller->updateEvent("onoffbt");
         // printf("hi");
     }
-    
+    if (clockbutton->getState() == RELEASE_ACTIVE)
+    {
+        controller->updateEvent("clockbutton");
+    }
     if (clockCheck->isUpdate())
     {
         controller->updateEvent("clockUpdate");

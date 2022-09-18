@@ -24,6 +24,7 @@ int main()
     Button powerButton(3);
     Button onoffbt(27);
     Button panpowerbutton(28);
+    Button clockbutton(29);
     ClockCheck clockCheck;
     Led led1(21);
     Led led2(22);
@@ -37,19 +38,21 @@ int main()
     View view(&led1, &led2, &led3, &led4, &led5, &lcd, &pwm);
     TempHumidView tempHumidView(&lcd, &pwm);
     ClockView clockView(&lcd);
-    Service service(&view);
+    Service service(&view, &clockView);
     ClockService clockService(&clockView);
     TempHumidService tempHumidService(&tempHumidView);
     Controller control(&service, &clockService, &tempHumidService);
-    Listener listener(&modeButton, &powerButton, &panpowerbutton, &onoffbt, &control, &clockCheck, &dht, &ultraSonic);
+    Listener listener(&modeButton, &powerButton, &panpowerbutton, &onoffbt, &clockbutton, &control, &clockCheck, &dht, &ultraSonic);
     DHT_Data dhtData;
 
     while (1)
     {
         listener.checkEvent();
         view.lightView();
- 
-        delay(50);
+        view.motorview();
+        clockView.counterclock();
+
+        delay(100);
         // pwm.Write(40);
         // delay(2000);
         // pwm.Write(70);

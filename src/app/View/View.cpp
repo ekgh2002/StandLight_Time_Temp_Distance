@@ -13,6 +13,8 @@ View::View(Led *led1, Led *led2, Led *led3, Led *led4, Led *led5, LCD *Lcd, PWM 
     this->lcd = Lcd;
     this->pwm = pwm;
     lightState = LIGHT_OFF;
+    motorState = PAN_OFF;
+    warningstate = 0;
 }
 
 View::~View()
@@ -22,6 +24,11 @@ View::~View()
 void View::setState(int state)
 {
     lightState = state;
+}
+
+void View::setmotorState(int state2)
+{
+    motorState = state2;
 }
 
 void View::lightView()
@@ -57,32 +64,64 @@ void View::lightView()
             lightOn_5();    
         break; 
 
+        case LIGHT_WARN:
+            lightwarning();
+        break;
+    }
+}
+
+void View::motorview()
+{
+    switch (motorState)
+    {
         case PAN_OFF:
             panoff();
-        break;
 
-        case PAN_ON:
-            pan1();
         break;
 
         case PAN1:
             pan1();
+        
         break;
 
         case PAN2:
             pan2();
+         
         break;
 
         case PAN3:
             pan3();
+       
         break;
-
-        case PANWARNING:
-
-        break;
-
     }
+
 }
+
+// void View::warningpanview()
+// {
+//     switch (warningstate)
+//     {
+//         case 0:
+//             panoff();
+
+//         break;
+
+//         case 1:
+//             pan1();
+        
+//         break;
+
+//         case 2:
+//             pan2();
+         
+//         break;
+
+//         case 3:
+//             pan3();
+       
+//         break;
+//     }    
+// }
 
 void View::lightOn_1()
 {
@@ -163,6 +202,19 @@ void View::lightOff()
     light5->Off();
 }
 
+void View::lightwarning()
+{
+     char buff[30];
+     sprintf(buff, "LightWARN");
+     lcd->WriteStringXY(0, 0, buff);
+    lcd->backLightOn();
+    light1->Off();
+    light2->Off();
+    light3->Off();
+    light4->Off();
+    light5->Off();
+}
+
 void View::pan1()
 {
     pwm->Write(40);
@@ -184,19 +236,19 @@ void View::panoff()
     // printf("hi");
 }
 
-void View::panwarning()
-{
-    char buff[30];
-    sprintf(buff, "WARNING ");
-    lcd->WriteStringXY(0, 0, buff);
-    lcd->backLightOff();
-    pwm->Write(40);
-    light1->Off();
-    light2->Off();
-    light3->Off();
-    light4->Off();
-    light5->Off();
-}
+// void View::panwarning()
+// {
+//     char buff[30];
+//     sprintf(buff, "WARNING ");
+//     lcd->WriteStringXY(0, 0, buff);
+//     lcd->backLightOff();
+//     pwm->Write(40);
+//     light1->Off();
+//     light2->Off();
+//     light3->Off();
+//     light4->Off();
+//     light5->Off();
+// }
 
 
 

@@ -11,6 +11,8 @@ class Controller
 {
 private:
     int lightState;
+    int motorState;
+    int warningactive;
     Service *service;
     ClockService *clockService;
     TempHumidService *tempHumidService;

@@ -2,11 +2,15 @@
 #include <iostream>
 #include <wiringPi.h>
 
-Service::Service(View *viewer)
+Service::Service(View *viewer, ClockView *clockview)
 {
-    view = viewer;
+    this->view = viewer;
+    this->clockview = clockview;
     lightState = LIGHT_OFF;
+    motorState = PAN_OFF;
     panstate = PAN_OFF;
+    warningactive = 0;
+    warning_state = 1;
     bDistanceLight = false;
 }
 
@@ -24,11 +28,7 @@ void Service::updateState(std::string strState)
                 lightState = LIGHT_1;
                 view->setState(lightState);
             }
-             if(strState == "onoffbt")
-             {
-                lightState = PAN_ON;
-                view->setState(lightState);
-             }
+
         break;
 
         case LIGHT_1:
@@ -37,11 +37,6 @@ void Service::updateState(std::string strState)
             }
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
-            }
-            if(strState == "onoffbt")
-            {
-            lightState = PAN_ON;
-            view->setState(lightState);
             }
             if (bDistanceLight)
             {
@@ -60,11 +55,6 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
-            if(strState == "onoffbt")
-            {
-            lightState = PAN_ON;
-            view->setState(lightState);
-            }
             if (bDistanceLight)
             {
                 view->setState(lightState);
@@ -81,11 +71,6 @@ void Service::updateState(std::string strState)
             }
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
-            }
-            if(strState == "onoffbt")
-            {
-            lightState = PAN_ON;
-            view->setState(lightState);
             }
             if (bDistanceLight)
             {
@@ -105,11 +90,6 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;
             }
-            if(strState == "onoffbt")
-            {
-            lightState = PAN_ON;
-            view->setState(lightState);
-            }
             if (bDistanceLight)
             {
                 view->setState(lightState);
@@ -127,11 +107,6 @@ void Service::updateState(std::string strState)
             if (strState == "powerButton") {
                 lightState = LIGHT_OFF;              
             }
-            if(strState == "onoffbt")
-            {
-            lightState = PAN_ON;
-            view->setState(lightState);
-            }
             if (bDistanceLight)
             {
                 view->setState(lightState);
@@ -142,82 +117,160 @@ void Service::updateState(std::string strState)
             }
         break;
 
-        case PAN_OFF:
-            if(strState == "onoffbt")
-            {
-                lightState = PAN_ON;
-                view->setState(lightState);
-            }     
-        break;
-
-        case PAN_ON:
-            if(strState == "onoffbt")
-            {
-                lightState = PAN_OFF;
+        case LIGHT_WARN:
+            if (strState == "modeButton") {
+                lightState = LIGHT_1;
                 view->setState(lightState);
             }
-            if(strState == "panpowerbutton")
-            {
-                lightState = PAN2;
-                view->setState(lightState);
-            }  
-        break;
-
-        case PAN1:
-            if(strState == "onoffbt")
-            {
-                lightState = PAN_OFF;
-                view->setState(lightState);
+            if (strState == "powerButton") {
+                lightState = LIGHT_OFF;              
             }
-            if(strState == "panpowerbutton")
-            {
-                lightState = PAN2;
-                view->setState(lightState);
-            }    
-        break;
-
-        case PAN2:
-            if(strState == "onoffbt")
-            {
-                lightState = PAN_OFF;
-                view->setState(lightState);
-            }
-            if(strState == "panpowerbutton")
-            {
-                lightState = PAN3;
-                view->setState(lightState);
-            }    
-        break;
-
-        case PAN3:
-            if(strState == "onoffbt")
-            {
-                lightState = PAN_OFF;
-                view->setState(lightState);
-            }
-            if(strState == "panpowerbutton")
-            {
-                lightState = PAN1;
-                view->setState(lightState);
-            }
-        break;
-
     }
 }
+
+void Service::updatemotorState(std::string strState1)
+{
+    if (warningactive == 0)
+    {
+        switch (motorState)
+        {
+            case PAN_OFF:
+                if(strState1 == "onoffbt")
+                {
+                    motorState = PAN1;
+                    view->setmotorState(motorState);
+                    // printf("hi");
+                }
+            break;
+
+            case PAN1:
+                if(strState1 == "onoffbt")
+                {
+                    motorState = PAN_OFF;
+                    view->setmotorState(motorState);
+                    // printf("hi");
+                }
+                if(strState1 == "panpowerbutton")
+                {
+                    motorState = PAN2;
+                    view->setmotorState(motorState);
+                    // printf("hi");
+                }
+    
+            break;
+
+            case PAN2:
+                if(strState1 == "onoffbt")
+                {
+                    motorState = PAN_OFF;
+                    view->setmotorState(motorState);
+                    // printf("hi");
+                }
+                if(strState1 == "panpowerbutton")
+                {
+                    motorState = PAN3;
+                    view->setmotorState(motorState);
+                    // printf("hi");
+                }    
+
+            break;
+
+            case PAN3:
+                if(strState1 == "onoffbt")
+                {
+                    motorState = PAN_OFF;
+                    view->setmotorState(motorState);
+                }
+                if(strState1 == "panpowerbutton")
+                {
+                    motorState = PAN1;
+                    view->setmotorState(motorState);
+                }
+
+            break;
+        }        
+    }
+}
+
+void Service::updatewarningState(std::string strState4)
+{
+    if(warningactive == 1)
+    {
+        switch (warning_state)
+        {
+            case 0:
+                if(strState4 == "onoffbt")
+                {
+                    warning_state = 1;
+                    view->setmotorState(motorState);
+                    printf("hi");
+                }
+            break;
+
+            case 1:
+                if(strState4 == "onoffbt")
+                {
+                    warning_state = 0;
+                    view->setmotorState(motorState);
+                    printf("hi");
+                }
+                if(strState4 == "panpowerbutton")
+                {
+                    warning_state = 2;
+                    view->setmotorState(motorState);
+                    // printf("hi");
+                }
+            break;
+
+            case 2:
+                if(strState4 == "onoffbt")
+                {
+                    warning_state = 0;
+                    view->setmotorState(motorState);
+                    printf("hi");
+                }
+                if(strState4 == "panpowerbutton")
+                {
+                    warning_state = 3;
+                    view->setmotorState(motorState);
+                    printf("hi");
+                }    
+            break;
+
+            case 3:
+                if(strState4 == "onoffbt")
+                {
+                    warning_state = 0;
+                    view->setmotorState(motorState);
+                }
+                if(strState4 == "panpowerbutton")
+                {
+                    warning_state = 1;
+                    view->setmotorState(motorState);
+                }
+            break;
+        }
+    }
+}
+
 
 
 void Service::updateEvent(DHT_Data dhtData)
 {
     float temp;
     temp = (float)dhtData.Temp + (float)(dhtData.TempDec/10.0);
-
-    if(temp > 26)
-    {
-        lightState = LIGHT_OFF;
-    }
-    
-
     view->setState(lightState);
+
+    if(temp >= 25)
+    {
+        motorState = PAN1;
+        view->setmotorState(PAN1);
+    }
+    else if(temp < 25)
+    {
+        motorState = PAN_OFF;
+        view->setmotorState(PAN_OFF);
+    }
     // view->lightwarning(dhtData);
 }
 

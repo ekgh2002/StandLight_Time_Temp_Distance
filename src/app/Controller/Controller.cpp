@@ -6,6 +6,8 @@ Controller::Controller(Service *serv, ClockService *clockServ, TempHumidService 
     service = serv;
     clockService = clockServ;
     lightState = LIGHT_OFF;
+    motorState = PAN_OFF;
+    warningactive = 0;
     this->tempHumidService = tempHumidService;
 }
 
@@ -27,14 +29,21 @@ void Controller::updateEvent(std::string strBtn)
     {
         clockService->updateEvent();        //  1초간격으로 event만 발생
     }
-    if (strBtn == "panpowerbutton")
-    {
-        service->updateState("panpowerbutton");
-        // printf("hi");
-    }
     if (strBtn == "onoffbt")
     {
-        service->updateState("onoffbt");
+        service->updatemotorState("onoffbt");
+        service->updatewarningState("onoffbt");
+        // printf("hi");
+    }
+    if (strBtn == "clockbutton")
+    {
+        clockService->clockselect("clockbutton");
+        // printf("hi");
+    }
+    if (strBtn == "panpowerbutton")
+    {
+        service->updatemotorState("panpowerbutton");
+        service->updatewarningState("panpowerbutton");
         // printf("hi");
     }
 }
@@ -42,7 +51,8 @@ void Controller::updateEvent(std::string strBtn)
 void  Controller::updateTempHumid(DHT_Data dhtData)
 {
     tempHumidService->updateEvent(dhtData);
-    service->updateEvent(dhtData);
+    //service->updateEvent(dhtData);
+
 }
 
 void Controller::updateDistance(int distance)
